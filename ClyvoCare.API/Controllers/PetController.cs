@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ClyvoCare.API.Data;
 using ClyvoCare.API.Entities;
+using ClyvoCare.API.DTOs;
 
 namespace ClyvoCare.API.Controllers
 {
@@ -18,10 +19,23 @@ namespace ClyvoCare.API.Controllers
 
         // GET: api/pet
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pet>>> GetAll()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PetResponseDto>>> GetAll(
+    int page = 1,
+    int pageSize = 10)
         {
             var pets = await _context.Pets
                 .Include(p => p.Tutor)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new PetResponseDto
+                {
+                    IdPet = p.IdPet,
+                    NomePet = p.NomePet,
+                    Especie = p.Especie,
+                    Raca = p.Raca,
+                    NomeTutor = p.Tutor.NomeTutor
+                })
                 .ToListAsync();
 
             return Ok(pets);

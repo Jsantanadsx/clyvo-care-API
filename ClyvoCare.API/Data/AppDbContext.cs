@@ -13,5 +13,9 @@ namespace ClyvoCare.API.Data
         public DbSet<Tutor> Tutores { get; set; }
 
         public DbSet<Pet> Pets { get; set; }
+
+        public DbSet<Consulta> Consultas { get; set; }
+
+        public DbSet<Vacina> Vacinas { get; set; }
     }
 }

@@ -11,17 +11,18 @@ namespace ClyvoCare.API.Entities
         [Column("ID_TUTOR")]
         public int IdTutor { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "O nome do tutor é obrigatório")]
+        [StringLength(100, ErrorMessage = "O nome deve ter no máximo 100 caracteres")]
         [Column("NOME_TUTOR")]
         public string NomeTutor { get; set; }
 
-        [Required]
-        [StringLength(14)]
+        [Required(ErrorMessage = "O CPF é obrigatório")]
+        [StringLength(14, ErrorMessage = "CPF inválido")]
         [Column("CPF_TUTOR")]
         public string CpfTutor { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "O e-mail é obrigatório")]
+        [EmailAddress(ErrorMessage = "E-mail inválido")]
         [StringLength(120)]
         [Column("EMAIL_TUTOR")]
         public string EmailTutor { get; set; }
@@ -33,7 +34,7 @@ namespace ClyvoCare.API.Entities
         [Column("DATA_NASCIMENTO_TUTOR")]
         public DateTime? DataNascimentoTutor { get; set; }
 
-        [Column("DT_CADASTRO_TUTOR")]t
+        [Column("DT_CADASTRO_TUTOR")]
         public DateTime DtCadastroTutor { get; set; }
 
         [JsonIgnore]

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ClyvoCare.API.Entities
 {
@@ -47,5 +48,11 @@ namespace ClyvoCare.API.Entities
         public int IdTutor { get; set; }
 
         public Tutor Tutor { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Consulta> Consultas { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Vacina> Vacinas { get; set; }
     }
 }

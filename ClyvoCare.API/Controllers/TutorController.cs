@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ClyvoCare.API.Data;
 using ClyvoCare.API.Entities;
+using ClyvoCare.API.Services;
 
 namespace ClyvoCare.API.Controllers
 {
@@ -9,18 +8,18 @@ namespace ClyvoCare.API.Controllers
     [Route("api/[controller]")]
     public class TutorController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly TutorService _service;
 
-        public TutorController(AppDbContext context)
+        public TutorController(TutorService service)
         {
-            _context = context;
+            _service = service;
         }
 
         // GET: api/tutor
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tutor>>> GetAll()
         {
-            var tutores = await _context.Tutores.ToListAsync();
+            var tutores = await _service.GetAllAsync();
 
             return Ok(tutores);
         }
@@ -29,7 +28,7 @@ namespace ClyvoCare.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Tutor>> GetById(int id)
         {
-            var tutor = await _context.Tutores.FindAsync(id);
+            var tutor = await _service.GetByIdAsync(id);
 
             if (tutor == null)
                 return NotFound();
@@ -41,14 +40,15 @@ namespace ClyvoCare.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Tutor>> Create(Tutor tutor)
         {
-            _context.Tutores.Add(tutor);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            await _context.SaveChangesAsync();
+            var novoTutor = await _service.CreateAsync(tutor);
 
             return CreatedAtAction(
                 nameof(GetById),
-                new { id = tutor.IdTutor },
-                tutor
+                new { id = novoTutor.IdTutor },
+                novoTutor
             );
         }
 
@@ -56,12 +56,13 @@ namespace ClyvoCare.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Tutor tutor)
         {
-            if (id != tutor.IdTutor)
-                return BadRequest();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            _context.Entry(tutor).State = EntityState.Modified;
+            var atualizado = await _service.UpdateAsync(id, tutor);
 
-            await _context.SaveChangesAsync();
+            if (!atualizado)
+                return NotFound();
 
             return NoContent();
         }
@@ -70,14 +71,10 @@ namespace ClyvoCare.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var tutor = await _context.Tutores.FindAsync(id);
+            var removido = await _service.DeleteAsync(id);
 
-            if (tutor == null)
+            if (!removido)
                 return NotFound();
-
-            _context.Tutores.Remove(tutor);
-
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
